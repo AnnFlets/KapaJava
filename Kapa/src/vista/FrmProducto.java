@@ -26,8 +26,7 @@ public class FrmProducto extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jop_mensajes = new javax.swing.JOptionPane();
-        jfile_imagenes = new javax.swing.JFileChooser();
+        jopMensaje = new javax.swing.JOptionPane();
         jLabel1 = new javax.swing.JLabel();
         jSeparator1 = new javax.swing.JSeparator();
         jSeparator8 = new javax.swing.JSeparator();
@@ -338,8 +337,7 @@ public class FrmProducto extends javax.swing.JFrame {
     private javax.swing.JSeparator jSeparator3;
     private javax.swing.JSeparator jSeparator6;
     private javax.swing.JSeparator jSeparator8;
-    public javax.swing.JFileChooser jfile_imagenes;
-    public javax.swing.JOptionPane jop_mensajes;
+    public javax.swing.JOptionPane jopMensaje;
     private javax.swing.JLabel lbFondoHorizontal;
     private javax.swing.JLabel lbfondoVertical;
     public javax.swing.JTable tblProductos;

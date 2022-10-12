@@ -19,8 +19,8 @@ import modelo.ProveedorVO;
 public class ControladorProducto implements ActionListener, WindowListener, MouseListener {
 
     FrmProducto vProducto = new FrmProducto();
-    ProductoVO pdvo = new ProductoVO();
-    ProductoDAO pddao = new ProductoDAO();
+    ProductoVO pvo = new ProductoVO();
+    ProductoDAO pdao = new ProductoDAO();
     ProveedorVO prvo = new ProveedorVO();
     ProveedorDAO prdao = new ProveedorDAO();
     Extras extras = new Extras();
@@ -33,22 +33,20 @@ public class ControladorProducto implements ActionListener, WindowListener, Mous
      * @param vProducto -> Representa la vista del administrador
      */
     public ControladorProducto(FrmProducto vProducto) {
-
         this.vProducto = vProducto;
         this.vProducto.addWindowListener(this);
+        this.vProducto.tblProductos.addMouseListener(this);
+        this.vProducto.btnLimpiarCampos.addActionListener(this);
         this.vProducto.btncrearProducto.addActionListener(this);
         this.vProducto.btnActualizarProducto.addActionListener(this);
         this.vProducto.btnEliminarProducto.addActionListener(this);
         this.vProducto.btnReporteProducto.addActionListener(this);
         this.vProducto.btnSalirProducto.addActionListener(this);
-        this.vProducto.btnLimpiarCampos.addActionListener(this);
-        this.vProducto.tblProductos.addMouseListener(this);
-
     }
 
     private void mostrarProductos() {
         ArrayList<ProveedorVO> proveedor = prdao.consultarProveedor();
-        ArrayList<ProductoVO> producto = pddao.consultarProducto();
+        ArrayList<ProductoVO> producto = pdao.consultarProducto();
         modeloTablaProductos = new DefaultTableModel() {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -61,7 +59,7 @@ public class ControladorProducto implements ActionListener, WindowListener, Mous
         modeloTablaProductos.addColumn("Marca");
         modeloTablaProductos.addColumn("Presentación");
         modeloTablaProductos.addColumn("Categoria");
-        modeloTablaProductos.addColumn("Precio de Compra Q");
+        modeloTablaProductos.addColumn("Precio de Compra");
         modeloTablaProductos.addColumn("Precio de Venta");
         modeloTablaProductos.addColumn("Existencias");
         modeloTablaProductos.addColumn("Imagen");
@@ -84,6 +82,10 @@ public class ControladorProducto implements ActionListener, WindowListener, Mous
         this.vProducto.tblProductos.getTableHeader().getColumnModel().getColumn(0).setMinWidth(0);
         this.vProducto.tblProductos.getColumnModel().getColumn(0).setMaxWidth(0);
         this.vProducto.tblProductos.getColumnModel().getColumn(0).setMinWidth(0);
+        this.vProducto.tblProductos.getTableHeader().getColumnModel().getColumn(8).setMaxWidth(0);
+        this.vProducto.tblProductos.getTableHeader().getColumnModel().getColumn(8).setMinWidth(0);
+        this.vProducto.tblProductos.getColumnModel().getColumn(8).setMaxWidth(0);
+        this.vProducto.tblProductos.getColumnModel().getColumn(8).setMinWidth(0);
         this.vProducto.tblProductos.getTableHeader().getColumnModel().getColumn(9).setMaxWidth(0);
         this.vProducto.tblProductos.getTableHeader().getColumnModel().getColumn(9).setMinWidth(0);
         this.vProducto.tblProductos.getColumnModel().getColumn(9).setMaxWidth(0);
@@ -136,9 +138,6 @@ public class ControladorProducto implements ActionListener, WindowListener, Mous
                 case 7:
                     this.vProducto.txtExistenciasProducto.setText(String.valueOf(this.vProducto.tblProductos.getValueAt(this.vProducto.tblProductos.getSelectedRow(), numero)));
                     break;
-                case 8:
-                    //Imagen
-                    break;
                 case 10:
                     this.vProducto.cmbProveedorProducto.setSelectedItem(String.valueOf(this.vProducto.tblProductos.getValueAt(this.vProducto.tblProductos.getSelectedRow(), numero)));
                     break;
@@ -150,11 +149,11 @@ public class ControladorProducto implements ActionListener, WindowListener, Mous
     private boolean verificarProductoDuplicado(int opcion) {
         boolean banderaProducto = true;
         if (opcion == 1) {
-            for (ProductoVO Producto : pddao.consultarProducto()) {
+            for (ProductoVO Producto : pdao.consultarProducto()) {
                 if (Producto.getIdProducto() == Integer.parseInt(this.vProducto.txtIdProducto.getText())) {
                     banderaProducto = false;
 
-                    this.vProducto.jop_mensajes.showMessageDialog(null, "Ya existe un Producto con el mismo ID.",
+                    this.vProducto.jopMensaje.showMessageDialog(null, "Ya existe un Producto con el mismo ID.",
                             "Advertencia", JOptionPane.WARNING_MESSAGE);
                     if (!this.vProducto.txtIdProducto.getText().isEmpty()) {
                         limpiarCampos();
@@ -163,12 +162,12 @@ public class ControladorProducto implements ActionListener, WindowListener, Mous
                 }
             }
         } else {
-            ArrayList<ProductoVO> Producto = pddao.consultarProducto();
+            ArrayList<ProductoVO> Producto = pdao.consultarProducto();
             for (int i = 0; i < Producto.size(); i++) {
                 if (Producto.get(i).getIdProducto() == Integer.parseInt(this.vProducto.txtIdProducto.getText())) {
                     if (i != this.vProducto.tblProductos.getSelectedRow()) {
                         banderaProducto = false;
-                        this.vProducto.jop_mensajes.showMessageDialog(null, "Ya existe un Producto con el mismo nombre y/o teléfono.",
+                        this.vProducto.jopMensaje.showMessageDialog(null, "Ya existe un Producto con el mismo nombre y/o teléfono.",
                                 "Advertencia", JOptionPane.WARNING_MESSAGE);
                         limpiarCampos();
                         break;
@@ -188,30 +187,27 @@ public class ControladorProducto implements ActionListener, WindowListener, Mous
                 && !this.vProducto.txtPrecioVentaProducto.getText().isEmpty()
                 && !this.vProducto.txtExistenciasProducto.getText().isEmpty()) {
             if (verificarProductoDuplicado(1)) {
-                this.pdvo.setDescripcionProducto(this.vProducto.txtDescripcionProducto.getText());
-                this.pdvo.setMarcaProducto(this.vProducto.txtMarcaProducto.getText());
-                this.pdvo.setPresentacionProducto(this.vProducto.txtPresentacionProducto.getText());
-                this.pdvo.setCategoriaProducto(this.vProducto.txtCategoriaProducto.getText());
-                this.pdvo.setPrecioCompraProducto(Double.parseDouble(this.vProducto.txtPrecioCompraProducto.getText()));
-                this.pdvo.setPrecioVentaProducto(Double.parseDouble(this.vProducto.txtPrecioVentaProducto.getText()));
-                this.pdvo.setExistenciaProducto(Integer.parseInt(this.vProducto.txtExistenciasProducto.getText()));
-                //this.pdvo.setImgProducto( this.vProducto.txtImagen.getText());
-                this.pdvo.setIdProveedor(this.vProducto.cmbProveedorProducto.getSelectedIndex() + 1);
-                if (pddao.insertarProducto(pdvo) == true) {
+                this.pvo.setDescripcionProducto(this.vProducto.txtDescripcionProducto.getText());
+                this.pvo.setMarcaProducto(this.vProducto.txtMarcaProducto.getText());
+                this.pvo.setPresentacionProducto(this.vProducto.txtPresentacionProducto.getText());
+                this.pvo.setCategoriaProducto(this.vProducto.txtCategoriaProducto.getText());
+                this.pvo.setPrecioCompraProducto(Double.parseDouble(this.vProducto.txtPrecioCompraProducto.getText()));
+                this.pvo.setPrecioVentaProducto(Double.parseDouble(this.vProducto.txtPrecioVentaProducto.getText()));
+                this.pvo.setExistenciaProducto(Integer.parseInt(this.vProducto.txtExistenciasProducto.getText()));
+                this.pvo.setIdProveedor(this.vProducto.cmbProveedorProducto.getSelectedIndex() + 1);
+                if (pdao.insertarProducto(pvo) == true) {
                     limpiarCampos();
-                    this.vProducto.jop_mensajes.showMessageDialog(null, "Producto registrado correctamente.",
+                    this.vProducto.jopMensaje.showMessageDialog(null, "Producto registrado correctamente.",
                             "Información", JOptionPane.INFORMATION_MESSAGE);
                 } else {
-                    this.vProducto.jop_mensajes.showMessageDialog(null, "Error, datos no registrados.",
+                    this.vProducto.jopMensaje.showMessageDialog(null, "Error, datos no registrados.",
                             "Advertencia", JOptionPane.WARNING_MESSAGE);
                 }
             }
         } else {
-            this.vProducto.jop_mensajes.showMessageDialog(null, "Todos los campos deben de tener información según corresponda",
+            this.vProducto.jopMensaje.showMessageDialog(null, "Todos los campos deben de tener información según corresponda",
                     "Advertencia", JOptionPane.WARNING_MESSAGE);
         }
-
-//
     }
 
     private void modificarProducto() {
@@ -223,54 +219,52 @@ public class ControladorProducto implements ActionListener, WindowListener, Mous
                 && !this.vProducto.txtPrecioVentaProducto.getText().isEmpty()
                 && !this.vProducto.txtExistenciasProducto.getText().isEmpty()) {
             if (verificarProductoDuplicado(2)) {
-                this.pdvo.setIdProducto(Integer.parseInt(this.vProducto.txtIdProducto.getText()));
-                this.pdvo.setDescripcionProducto(this.vProducto.txtDescripcionProducto.getText());
-                this.pdvo.setMarcaProducto(this.vProducto.txtMarcaProducto.getText());
-                this.pdvo.setPresentacionProducto(this.vProducto.txtPresentacionProducto.getText());
-                this.pdvo.setCategoriaProducto(this.vProducto.txtCategoriaProducto.getText());
-                this.pdvo.setPrecioCompraProducto(Double.parseDouble(this.vProducto.txtPrecioCompraProducto.getText()));
-                this.pdvo.setPrecioVentaProducto(Double.parseDouble(this.vProducto.txtPrecioVentaProducto.getText()));
-                this.pdvo.setExistenciaProducto(Integer.parseInt(this.vProducto.txtExistenciasProducto.getText()));
-                //this.pdvo.setImgProducto( this.vProducto.txtImagen.getText());
-                this.pdvo.setIdProveedor(this.vProducto.cmbProveedorProducto.getSelectedIndex() + 1);
-                if (pddao.actualizarProducto(pdvo) == true) {
+                this.pvo.setIdProducto(Integer.parseInt(this.vProducto.txtIdProducto.getText()));
+                this.pvo.setDescripcionProducto(this.vProducto.txtDescripcionProducto.getText());
+                this.pvo.setMarcaProducto(this.vProducto.txtMarcaProducto.getText());
+                this.pvo.setPresentacionProducto(this.vProducto.txtPresentacionProducto.getText());
+                this.pvo.setCategoriaProducto(this.vProducto.txtCategoriaProducto.getText());
+                this.pvo.setPrecioCompraProducto(Double.parseDouble(this.vProducto.txtPrecioCompraProducto.getText()));
+                this.pvo.setPrecioVentaProducto(Double.parseDouble(this.vProducto.txtPrecioVentaProducto.getText()));
+                this.pvo.setExistenciaProducto(Integer.parseInt(this.vProducto.txtExistenciasProducto.getText()));
+                this.pvo.setIdProveedor(this.vProducto.cmbProveedorProducto.getSelectedIndex() + 1);
+                if (pdao.actualizarProducto(pvo) == true) {
                     limpiarCampos();
-                    this.vProducto.jop_mensajes.showMessageDialog(null, "Producto actualizado correctamente.",
+                    this.vProducto.jopMensaje.showMessageDialog(null, "Producto actualizado correctamente.",
                             "Información", JOptionPane.INFORMATION_MESSAGE);
                 } else {
-                    this.vProducto.jop_mensajes.showMessageDialog(null, "Error, no se pudo actualizar el producto.",
+                    this.vProducto.jopMensaje.showMessageDialog(null, "Error, no se pudo actualizar el producto.",
                             "Advertencia", JOptionPane.WARNING_MESSAGE);
                 }
             }
         } else {
-            this.vProducto.jop_mensajes.showMessageDialog(null, "No ha seleccionado ningún producto.",
+            this.vProducto.jopMensaje.showMessageDialog(null, "No ha seleccionado ningún producto.",
                     "Advertencia", JOptionPane.WARNING_MESSAGE);
         }
     }
 
     private void eliminarProducto() {
         if (!this.vProducto.txtIdProducto.getText().isEmpty()) {
-            this.pdvo.setIdProducto(Integer.parseInt(this.vProducto.txtIdProducto.getText()));
-            if (pddao.eliminarProducto(pdvo) == true) {
+            this.pvo.setIdProducto(Integer.parseInt(this.vProducto.txtIdProducto.getText()));
+            if (pdao.eliminarProducto(pvo) == true) {
                 limpiarCampos();
-                this.vProducto.jop_mensajes.showMessageDialog(null, "Producto eliminado correctamente.",
+                this.vProducto.jopMensaje.showMessageDialog(null, "Producto eliminado correctamente.",
                         "Información", JOptionPane.INFORMATION_MESSAGE);
             } else {
-                this.vProducto.jop_mensajes.showMessageDialog(null, "Error, no se pudo eliminar el producto.",
+                this.vProducto.jopMensaje.showMessageDialog(null, "Error, no se pudo eliminar el producto.",
                         "Advertencia", JOptionPane.WARNING_MESSAGE);
             }
         } else {
-            this.vProducto.jop_mensajes.showMessageDialog(null, "No ha seleccionado ningún producto.",
+            this.vProducto.jopMensaje.showMessageDialog(null, "No ha seleccionado ningún producto.",
                     "Advertencia", JOptionPane.WARNING_MESSAGE);
         }
     }
 
     private void reporteProductos() {
-        pddao.reporteProducto();
-        pddao.jasperViewer.setDefaultCloseOperation(this.vProducto.DISPOSE_ON_CLOSE);
-        pddao.jasperViewer.setVisible(true);
+        pdao.reporteProducto();
+        pdao.jasperViewer.setDefaultCloseOperation(this.vProducto.DISPOSE_ON_CLOSE);
+        pdao.jasperViewer.setVisible(true);
         banderaReporte = true;
-
     }
 
     private void limpiarCampos() {
@@ -303,13 +297,10 @@ public class ControladorProducto implements ActionListener, WindowListener, Mous
             reporteProductos();
         }
         if (e.getSource() == this.vProducto.btnSalirProducto) {
-            limpiarCampos();
             this.vProducto.dispose();
-            if (!this.vProducto.txtIdProducto.getText().isEmpty()) {
-                limpiarCampos();
-            }
+            limpiarCampos();
             if (banderaReporte) {
-                pddao.jasperViewer.setVisible(false);
+                pdao.jasperViewer.setVisible(false);
             }
         }
     }
@@ -317,7 +308,6 @@ public class ControladorProducto implements ActionListener, WindowListener, Mous
     @Override
     public void windowOpened(WindowEvent e) {
         llenarComboboxProveedores();
-        limpiarCampos();
         mostrarProductos();
     }
 
@@ -327,11 +317,9 @@ public class ControladorProducto implements ActionListener, WindowListener, Mous
 
     @Override
     public void windowClosed(WindowEvent e) {
-        if (!this.vProducto.txtIdProducto.getText().isEmpty()) {
-            limpiarCampos();
-        }
+        limpiarCampos();
         if (banderaReporte) {
-            pddao.jasperViewer.setVisible(false);
+            pdao.jasperViewer.setVisible(false);
         }
     }
 

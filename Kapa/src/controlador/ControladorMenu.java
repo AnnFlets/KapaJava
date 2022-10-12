@@ -54,7 +54,7 @@ public class ControladorMenu implements ActionListener, WindowListener {
         this.vProducto.setVisible(true);
         this.vProducto.setLocationRelativeTo(null);
         this.vProducto.setResizable(false);
-        //this.vProducto.setSize(1060, 645);
+        this.vProducto.setSize(1070, 645);
     }
 
     private void abrirProveedores() {

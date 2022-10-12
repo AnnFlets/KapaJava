@@ -64,10 +64,11 @@ public class Kapa {
          */
         ControladorLogin cLogin = new ControladorLogin(vLogin, vMenu);
         ControladorMenu cMenu = new ControladorMenu(vLogin, vMenu, vProducto, vProveedor, vCliente, vVentas);
+        ControladorProducto cProducto = new ControladorProducto(vProducto); 
         ControladorProveedor cProveedor = new ControladorProveedor(vProveedor);
         ControladorCliente cCliente = new ControladorCliente(vCliente);
         ControladorVenta cVenta = new ControladorVenta(vVentas);
-        ControladorProducto cProducto = new ControladorProducto (vProducto);   
+          
         /**
          * Extras
          */

@@ -1,10 +1,7 @@
 package modelo;
 
-import java.awt.Image;
-import java.sql.Blob;
-
-
 public class ProductoVO {
+
     /**
      * Atributos de la clase
      */
@@ -16,12 +13,8 @@ public class ProductoVO {
     private double precioCompraProducto;
     private double precioVentaProducto;
     private int existenciaProducto;
-    //private Image imgProducto;
-    private Blob imgProducto;
+    private String imgProducto;
     private int idProveedor;
-    private Blob blob;
-    private String ImagenNombreProducto;
-    
 
     /**
      * Constructor vacío
@@ -31,9 +24,9 @@ public class ProductoVO {
 
     /**
      * Getters & Setters
+     *
      * @return -> Retorna el valor almacenado en las variables
      */
-     
     public int getIdProducto() {
         return idProducto;
     }
@@ -98,13 +91,13 @@ public class ProductoVO {
         this.existenciaProducto = existenciaProducto;
     }
 
-   // public Image getImgProducto() {
-   //     return imgProducto;
-   // }
+    public String getImgProducto() {
+        return imgProducto;
+    }
 
-  //  public void setImgProducto(Image imgProducto) {
-  //      this.imgProducto = imgProducto;
-  //  }
+    public void setImgProducto(String imgProducto) {
+        this.imgProducto = imgProducto;
+    }
 
     public int getIdProveedor() {
         return idProveedor;
@@ -113,32 +106,4 @@ public class ProductoVO {
     public void setIdProveedor(int idProveedor) {
         this.idProveedor = idProveedor;
     }
-
-    public Blob getBlob() {
-        return blob;
-    }
-
-    public void setBlob(Blob blob) {
-        this.blob = blob;
-    }
-
-    public String getImagenNombreProducto() {
-        return ImagenNombreProducto;
-    }
-
-    public void setImagenNombreProducto(String ImagenNombreProducto) {
-        this.ImagenNombreProducto = ImagenNombreProducto;
-    }
-
-    Blob getBlob(String imagen) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-    
-    public Blob getImgProducto() {
-        return imgProducto;
-   }
-
-    public void setImgProducto(Blob imgProducto) {
-       this.imgProducto = imgProducto;
-   }   
 }

@@ -8,5 +8,4 @@ public interface ConsultarProducto {
     public boolean actualizarProducto(ProductoVO pvo);
     public boolean eliminarProducto(ProductoVO pvo);
     public void reporteProducto();
-    public ArrayList<ProductoVO> actualizarTabla();
 }
